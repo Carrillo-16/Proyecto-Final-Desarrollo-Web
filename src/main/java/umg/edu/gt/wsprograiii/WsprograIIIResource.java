@@ -10,14 +10,22 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.enterprise.context.RequestScoped;
 import javax.json.JsonObject;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.json.simple.JSONObject;
+import umg.edu.gt.BD.DAO;
+import umg.edu.gt.DTO.UsuarioDTO;
 
 /**
  * REST Web Service
- * localhost:8080/wsprograIII/webresources/wsprograIII/CuartoWS?pNombre=Antonio Jose&pEdad=20&pCorreo=antonio@gmail.com
+ * Ruta general: http://localhost:8080/wsprograIII/webresources/wsprograIII/
+ * 
+ * Ruta para Insert: http://localhost:8080/wsprograIII/webresources/wsprograIII/OctavoWS?NombreUsuario=Antonio%20Carrillo&correo=Carrillo49@gmail.com
+ * Ruta para Update: 
+ * 
  * @author default
  */
 @Path("wsprograIII")
@@ -142,5 +150,75 @@ public class WsprograIIIResource {
         json.put("División", n2 != 0 ? n1 / n2 : "Error: División por cero");
         return json;
     }
+       
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("OctavoWS")
+    public JSONObject OctavoWS(
+        @QueryParam("NombreUsuario") String NombreUsuario,
+        @QueryParam("correo") String Correo
+    ) {
+        JSONObject json = new JSONObject();
+
+        try {
+            if (NombreUsuario == null || Correo == null || NombreUsuario.isEmpty() || Correo.isEmpty()) {
+                json.put("status", "ERROR");
+                json.put("mensaje", "Faltan parámetros requeridos");
+                return json;
+            }
+
+            UsuarioDTO usuario = new UsuarioDTO();
+            usuario.setNombreUsuario(NombreUsuario);
+            usuario.setCorreo(Correo);
+
+            DAO dao = new DAO();
+            dao.InsertarUsuario(usuario);
+
+            json.put("status", "OK");
+            json.put("mensaje", "Usuario insertado correctamente");
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al insertar usuario: " + e.getMessage());
+        }
+
+        return json;
+    }
     
+    @GET
+    @Path("ActualizarUsuario")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JSONObject actualizarUsuario(
+        @QueryParam("IdUsuario") int IdUsuario,
+        @QueryParam("NombreUsuario") String NombreUsuario,
+        @QueryParam("Correo") String Correo
+    ) {
+        JSONObject json = new JSONObject();
+
+        try {
+            if (NombreUsuario == null || Correo == null || NombreUsuario.isEmpty() || Correo.isEmpty()) {
+                json.put("status", "ERROR");
+                json.put("mensaje", "Faltan parámetros requeridos");
+                return json;
+            }
+
+            UsuarioDTO usuario = new UsuarioDTO();
+            usuario.setIdUsuario(IdUsuario);
+            usuario.setNombreUsuario(NombreUsuario);
+            usuario.setCorreo(Correo);
+
+            DAO dao = new DAO();
+            dao.UpdateUsuario(usuario);
+
+            json.put("status", "OK");
+            json.put("mensaje", "Usuario actualizado correctamente");
+        } catch (Exception e) {
+            e.printStackTrace();
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al actualizar usuario: " + e.toString());
+        }
+
+        return json;
+    }
+
+
 }

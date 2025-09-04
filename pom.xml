@@ -46,6 +46,12 @@
         </dependency>
         
         <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version> <!-- o la versión más reciente compatible -->
+        </dependency>
+        
+        <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <version>${jakartaee}</version>

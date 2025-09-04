@@ -1,4 +1,7 @@
-umg\edu\gt\wsprograiii\WsprograIIIResource.class
 umg\edu\gt\wsprograiii\Persona.class
 umg\edu\gt\wsprograiii\resources\JavaEE8Resource.class
+umg\edu\gt\BD\DAO.class
+umg\edu\gt\BD\Conexion.class
+umg\edu\gt\wsprograiii\WsprograIIIResource.class
+umg\edu\gt\DTO\UsuarioDTO.class
 umg\edu\gt\wsprograiii\JAXRSConfiguration.class
