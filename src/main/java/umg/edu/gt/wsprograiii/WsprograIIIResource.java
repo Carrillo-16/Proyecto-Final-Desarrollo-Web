@@ -42,7 +42,7 @@ public class WsprograIIIResource {
     @Produces(MediaType.TEXT_PLAIN)
     @Path("PrimerWS")
     public String PrimerWS() {
-        return "Hola desde un webservice de CARRILLO#1";
+        return "Hola desde un webservice de CARRILLO#1. Proyecto Final";
     }
 
     @GET
