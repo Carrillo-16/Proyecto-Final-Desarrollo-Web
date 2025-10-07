@@ -7,23 +7,26 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.enterprise.context.RequestScoped;
 import javax.json.JsonObject;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 import org.json.simple.JSONObject;
 import umg.edu.gt.BD.DAO;
+import umg.edu.gt.DTO.PersonaDTO;
 import umg.edu.gt.DTO.UsuarioDTO;
 
 /**
  * REST Web Service
  * Ruta general: http://localhost:8080/wsprograIII/webresources/wsprograIII/
  * 
- * Ruta para Insert: http://localhost:8080/wsprograIII/webresources/wsprograIII/OctavoWS?NombreUsuario=Antonio%20Carrillo&correo=Carrillo49@gmail.com
+ * Ruta para Insert: http://localhost:8080/wsprograIII/webresources/wsprograIII/Insertar?NombreUsuario=Marlon%20Colindre&Correo=Colindres@gmail.com
  * Ruta para Update: 
  * 
  * @author default
@@ -42,7 +45,7 @@ public class WsprograIIIResource {
     @Produces(MediaType.TEXT_PLAIN)
     @Path("PrimerWS")
     public String PrimerWS() {
-        return "Hola desde un webservice de CARRILLO#1. Proyecto Final";
+        return "Hola desde un webservice de CARRILLO#1";
     }
 
     @GET
@@ -117,6 +120,7 @@ public class WsprograIIIResource {
    
         return json;
     }
+    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("SextoWS")
@@ -150,32 +154,41 @@ public class WsprograIIIResource {
         json.put("División", n2 != 0 ? n1 / n2 : "Error: División por cero");
         return json;
     }
-       
+        
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("OctavoWS")
-    public JSONObject OctavoWS(
-        @QueryParam("NombreUsuario") String NombreUsuario,
-        @QueryParam("correo") String Correo
+    @Path("Insertar")
+    public JSONObject Insertar(
+        @QueryParam("Nombre") String Nombre,
+        @QueryParam("Apellido") String Apellido,
+        @QueryParam("Telefono") String Telefono,
+        @QueryParam("Correo") String Correo        
     ) {
         JSONObject json = new JSONObject();
 
         try {
-            if (NombreUsuario == null || Correo == null || NombreUsuario.isEmpty() || Correo.isEmpty()) {
+            if (Nombre == null || Apellido == null ||
+                Telefono == null || Correo == null ||               
+                Nombre.isEmpty() || Apellido.isEmpty() ||
+                Telefono.isEmpty() || Correo.isEmpty()){
+                
                 json.put("status", "ERROR");
                 json.put("mensaje", "Faltan parámetros requeridos");
                 return json;
             }
 
-            UsuarioDTO usuario = new UsuarioDTO();
-            usuario.setNombreUsuario(NombreUsuario);
-            usuario.setCorreo(Correo);
+            PersonaDTO persona = new PersonaDTO();
+            persona.setNombre(Nombre);
+            persona.setApellido(Apellido);
+            persona.setTelefono(Telefono);
+            persona.setCorreo(Correo);
+            persona.setEstado(1);
 
             DAO dao = new DAO();
-            dao.InsertarUsuario(usuario);
+            dao.InsertarPersona(persona);
 
             json.put("status", "OK");
-            json.put("mensaje", "Usuario insertado correctamente");
+            json.put("mensaje", "Usuario insertado correctamente desde el equipo adminsitrador");
         } catch (Exception e) {
             json.put("status", "ERROR");
             json.put("mensaje", "Error al insertar usuario: " + e.getMessage());
@@ -185,32 +198,42 @@ public class WsprograIIIResource {
     }
     
     @GET
-    @Path("ActualizarUsuario")
+    @Path("Modificar")
     @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject actualizarUsuario(
-        @QueryParam("IdUsuario") int IdUsuario,
-        @QueryParam("NombreUsuario") String NombreUsuario,
-        @QueryParam("Correo") String Correo
+    public JSONObject Modificar(
+        @QueryParam("IdPersona") int IdPersona,        
+        @QueryParam("Nombre") String Nombre,
+        @QueryParam("Apellido") String Apellido,
+        @QueryParam("Correo") String Correo,
+        @QueryParam("Telefono") String Telefono,
+        @QueryParam("Estado") int Estado
     ) {
         JSONObject json = new JSONObject();
 
         try {
-            if (NombreUsuario == null || Correo == null || NombreUsuario.isEmpty() || Correo.isEmpty()) {
+                if (Nombre == null || Apellido == null || 
+                    Correo == null || Telefono == null ||
+                    Nombre.isEmpty() || Apellido.isEmpty() ||
+                    Correo.isEmpty() || Telefono.isEmpty()){
+                    
                 json.put("status", "ERROR");
                 json.put("mensaje", "Faltan parámetros requeridos");
                 return json;
             }
 
-            UsuarioDTO usuario = new UsuarioDTO();
-            usuario.setIdUsuario(IdUsuario);
-            usuario.setNombreUsuario(NombreUsuario);
-            usuario.setCorreo(Correo);
+            PersonaDTO Persona = new PersonaDTO();
+            Persona.setIdPersona(IdPersona);
+            Persona.setNombre(Nombre);
+            Persona.setApellido(Apellido);
+            Persona.setCorreo(Correo);
+            Persona.setTelefono(Telefono);
+            Persona.setEstado(Estado);
 
             DAO dao = new DAO();
-            dao.UpdateUsuario(usuario);
+            dao.ModificarPersona(Persona);
 
             json.put("status", "OK");
-            json.put("mensaje", "Usuario actualizado correctamente");
+            json.put("mensaje", "Usuario actualizado correctamente desde el equipo adminsitrador");
         } catch (Exception e) {
             e.printStackTrace();
             json.put("status", "ERROR");
@@ -219,6 +242,66 @@ public class WsprograIIIResource {
 
         return json;
     }
+    
+    @GET
+    @Path("Borrar")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JSONObject Borrar(@QueryParam("IdPersona") int IdPersona) {
+        JSONObject json = new JSONObject();
+
+        try {
+            PersonaDTO Persona = new PersonaDTO();
+            Persona.setIdPersona(IdPersona);
+            Persona.setEstado(0); 
+
+            DAO dao = new DAO();
+            dao.BorrarPersona(Persona);
+
+            json.put("status", "OK");
+            json.put("mensaje", "Usuario marcado como inactivo correctamente desde el equipo adminsitrador.");
+
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al intentar eliminar usuario: " + e.getMessage());
+        }
+
+        return json;
+    }
 
 
+    @GET
+    @Path("Consulta")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JSONObject Consulta(
+        @QueryParam("IdPersona") int IdPersona
+    ) {
+        JSONObject json = new JSONObject();
+
+        try {
+            PersonaDTO Persona = new PersonaDTO();
+            Persona.setIdPersona(IdPersona);
+
+            DAO dao = new DAO();
+            dao.ListarPersona(Persona); // este ya llena los datos en el mismo objeto
+
+            // Validamos si trajo datos
+            if (Persona.getNombre() != null && Persona.getCorreo() != null && Persona.getEstado() == 1){
+                json.put("status", "OK, Consulta hecha en equipo administrador");
+                json.put("IdPersona", Persona.getIdPersona());
+                json.put("Nombre", Persona.getNombre());
+                json.put("Apellido", Persona.getApellido());
+                json.put("Telefono", Persona.getTelefono());
+                json.put("Correo", Persona.getCorreo());
+            } else {
+                json.put("status", "ERROR");
+                json.put("mensaje", "No se encontró usuario con ID: " + IdPersona);
+            }
+
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al consultar usuario: " + e.getMessage());
+        }
+        
+        return json;
+    }    
 }
