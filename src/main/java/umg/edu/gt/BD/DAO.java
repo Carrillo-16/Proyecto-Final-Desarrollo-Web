@@ -87,21 +87,21 @@ public class DAO {
             ResultSet rs = pstm.executeQuery();
             
             if (rs.next()) {
-            pPersona.setNombre(rs.getString("Nombre"));
-            pPersona.setApellido(rs.getString("Apellido"));
-            pPersona.setTelefono(rs.getString("Telefono"));
-            pPersona.setEstado(rs.getInt("Estado")); // útil para validación
+                pPersona.setNombre(rs.getString("Nombre"));
+                pPersona.setApellido(rs.getString("Apellido"));
+                pPersona.setTelefono(rs.getString("Telefono"));
+                pPersona.setCorreo(rs.getString("Correo"));
+                pPersona.setEstado(rs.getInt("Estado")); 
 
-            System.out.println("✅ Usuario encontrado:");
-            System.out.println("Nombre: " + pPersona.getNombre());
-            System.out.println("Correo: " + pPersona.getCorreo());
-                
+                System.out.println("✅ Usuario encontrado:");
+                System.out.println("Nombre: " + pPersona.getNombre());
+                System.out.println("Correo: " + pPersona.getCorreo());
             } else {
                 System.out.println("⚠️ No se encontró usuario con ese ID.");
             }
             
-        }catch(Exception ex){
-            System.out.println("ERROR" + ex);
+        } catch(Exception ex){
+            System.out.println("ERROR en ListarPersona: " + ex);
         }        
     }
 }
