@@ -20,6 +20,27 @@
     </properties>
     
     <dependencies>
+        <!--  API JPA (ya tienes javaee-api, pero especifícala para claridad)  -->
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+            <version>2.2</version>
+        </dependency>
+
+        <!--  Hibernate Core (Implementación JPA)  -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.6.15.Final</version> <!--  Compatible con JDK 17 y Tomcat 9  -->
+        </dependency>
+
+        <!--  Hibernate Validator (para validaciones, opcional pero recomendado)  -->
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>6.2.5.Final</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
@@ -54,9 +75,9 @@
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
-            <version>${jakartaee}</version>
-            <scope>provided</scope>   
-        </dependency>                     
+            <version>8.0</version>
+            <scope>provided</scope>
+        </dependency>                
     </dependencies>
     
      <build>

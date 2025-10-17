@@ -19,7 +19,9 @@ import javax.json.JsonObject;
 import javax.ws.rs.FormParam;
 import org.json.simple.JSONObject;
 import umg.edu.gt.BD.DAO;
+import umg.edu.gt.BD.PersonaDAO;
 import umg.edu.gt.DTO.PersonaDTO;
+import umg.edu.gt.DTO.PersonaEntity;
 import umg.edu.gt.DTO.UsuarioDTO;
 
 /**
@@ -303,5 +305,166 @@ public class WsprograIIIResource {
         }
         
         return json;
-    }    
+    }
+    
+    
+    /**
+     * NUEVOS WEB SERVICES FUNCIONALES CON HIBERNATE
+     */
+    
+    @GET
+    @Path("Insertar2")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JSONObject Insertar2(
+        @QueryParam("Nombre") String Nombre,
+        @QueryParam("Apellido") String Apellido,
+        @QueryParam("Telefono") String Telefono,
+        @QueryParam("Correo") String Correo
+    ) {
+        JSONObject json = new JSONObject();
+
+        try {
+            if (Nombre == null || Apellido == null || Telefono == null || Correo == null ||
+                Nombre.isEmpty() || Apellido.isEmpty() || Telefono.isEmpty() || Correo.isEmpty()) {
+
+                json.put("status", "ERROR");
+                json.put("mensaje", "Faltan parámetros requeridos");
+                return json;
+            }
+
+            // Aquí usas la entidad y DAO Hibernate
+            PersonaEntity persona = new PersonaEntity();
+            persona.setNombre(Nombre);
+            persona.setApellido(Apellido);
+            persona.setTelefono(Telefono);
+            persona.setCorreo(Correo);
+            persona.setEstado(1);
+
+            PersonaDAO dao = new PersonaDAO();
+            dao.InsertarPersona(persona);
+
+            json.put("status", "OK");
+            json.put("mensaje", "Persona insertada correctamente con Hibernate");
+
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al insertar persona: " + e.getMessage());
+        }
+
+        return json;
+    }
+    
+    @GET
+    @Path("Modificar2")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JSONObject Modificar2(
+        @QueryParam("IdPersona") int IdPersona,
+        @QueryParam("Nombre") String Nombre,
+        @QueryParam("Apellido") String Apellido,
+        @QueryParam("Telefono") String Telefono,
+        @QueryParam("Correo") String Correo,
+        @QueryParam("Estado") int Estado
+    ) {
+        JSONObject json = new JSONObject();
+
+        try {
+            if (IdPersona <= 0 || Nombre == null || Apellido == null || Telefono == null || Correo == null ||
+                Nombre.isEmpty() || Apellido.isEmpty() || Telefono.isEmpty() || Correo.isEmpty()) {
+
+                json.put("status", "ERROR");
+                json.put("mensaje", "Faltan parámetros requeridos o IdPersona inválido");
+                return json;
+            }
+
+            PersonaDAO dao = new PersonaDAO();
+            PersonaEntity persona = dao.ConsultarPersona(IdPersona);
+
+            if (persona == null) {
+                json.put("status", "ERROR");
+                json.put("mensaje", "No se encontró la persona con ID: " + IdPersona);
+                return json;
+            }
+
+            persona.setNombre(Nombre);
+            persona.setApellido(Apellido);
+            persona.setTelefono(Telefono);
+            persona.setCorreo(Correo);
+            persona.setEstado(Estado);
+
+            dao.ModificarPersona(persona);
+
+            json.put("status", "OK");
+            json.put("mensaje", "Persona actualizada correctamente con Hibernate");
+
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al modificar persona: " + e.getMessage());
+        }
+
+        return json;
+    }
+
+    @GET
+    @Path("Borrar2")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JSONObject Borrar2(@QueryParam("IdPersona") int IdPersona) {
+        JSONObject json = new JSONObject();
+
+        try {
+            if (IdPersona <= 0) {
+                json.put("status", "ERROR");
+                json.put("mensaje", "IdPersona inválido");
+                return json;
+            }
+
+            PersonaDAO dao = new PersonaDAO();
+            dao.BorrarPersona(IdPersona);
+
+            json.put("status", "OK");
+            json.put("mensaje", "Persona marcada como inactiva con Hibernate");
+
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al borrar persona: " + e.getMessage());
+        }
+
+        return json;
+    }
+
+    @GET
+    @Path("Consultar2")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JSONObject Consultar2(@QueryParam("IdPersona") int IdPersona) {
+        JSONObject json = new JSONObject();
+
+        try {
+            if (IdPersona <= 0) {
+                json.put("status", "ERROR");
+                json.put("mensaje", "IdPersona inválido");
+                return json;
+            }
+
+            PersonaDAO dao = new PersonaDAO();
+            PersonaEntity persona = dao.ConsultarPersona(IdPersona);
+
+            if (persona != null && persona.getEstado() == 1) {
+                json.put("status", "OK");
+                json.put("IdPersona", persona.getIdPersona());
+                json.put("Nombre", persona.getNombre());
+                json.put("Apellido", persona.getApellido());
+                json.put("Telefono", persona.getTelefono());
+                json.put("Correo", persona.getCorreo());
+            } else {
+                json.put("status", "ERROR");
+                json.put("mensaje", "No se encontró persona con ID: " + IdPersona);
+            }
+
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al consultar persona: " + e.getMessage());
+        }
+
+        return json;
+    }
+
 }
