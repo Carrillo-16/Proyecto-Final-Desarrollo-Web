@@ -18,11 +18,8 @@ import javax.enterprise.context.RequestScoped;
 import javax.json.JsonObject;
 import javax.ws.rs.FormParam;
 import org.json.simple.JSONObject;
-import umg.edu.gt.BD.DAO;
 import umg.edu.gt.BD.PersonaDAO;
-import umg.edu.gt.DTO.PersonaDTO;
 import umg.edu.gt.DTO.PersonaEntity;
-import umg.edu.gt.DTO.UsuarioDTO;
 
 /**
  * REST Web Service
@@ -43,7 +40,7 @@ public class WsprograIIIResource {
     public WsprograIIIResource() {
     }
 
-    @GET
+    /*@GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("PrimerWS")
     public String PrimerWS() {
@@ -70,25 +67,6 @@ public class WsprograIIIResource {
         Persona persona1 =  new Persona(pNombre, pEdad, pCorreo);
         return persona1;
         
-    }
-    
-    @GET
-    @Produces (MediaType.APPLICATION_JSON)
-    @Path("CuartoWS")                          //path  TERCER WEBserviCE
-    public JSONObject CuartoWS(@QueryParam("pNombre") String pNombre,
-                            @QueryParam("pEdad") String pEdad,
-                            @QueryParam("pCorreo") String pCorreo) {
-        System.out.println("pNombre= " + pNombre);
-        System.out.println("pEdad= " + pEdad);
-        System.out.println("pcorreo= " + pCorreo);
-        
-        JSONObject json = new JSONObject();
-        json.put("Nombre:",pNombre);
-        json.put("Edad", pEdad);
-        json.put("Correo", pCorreo);     
-        System.out.println("El Json es: " +json.toJSONString());
-        
-        return json;
     }
     
     @GET
@@ -121,201 +99,16 @@ public class WsprograIIIResource {
         json.put("Edad", pEdad);
    
         return json;
-    }
-    
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("SextoWS")
-    public JSONObject SextoWS(
-        @QueryParam("nombre") String nombre,
-        @QueryParam("correo") String correo
-    ) {
-        JSONObject json = new JSONObject();
-        if (nombre == null || nombre.isEmpty() || correo == null || correo.isEmpty()) {
-            json.put("status", "ERROR");
-            json.put("mensaje", "Faltan parámetros obligatorios");
-        } else {
-            json.put("status", "OK");
-            json.put("nombre", nombre);
-            json.put("correo", correo);
-        }
-        return json;   
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("SeptimoWS")
-    public JSONObject SeptimoWS(
-        @QueryParam("n1") double n1,
-        @QueryParam("n2") double n2
-    ) {
-        JSONObject json = new JSONObject();
-        json.put("Suma", n1 + n2);
-        json.put("Resta", n1 - n2);
-        json.put("Multiplicación", n1 * n2);
-        json.put("División", n2 != 0 ? n1 / n2 : "Error: División por cero");
-        return json;
-    }
+    }*/                   
         
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("Insertar")
-    public JSONObject Insertar(
-        @QueryParam("Nombre") String Nombre,
-        @QueryParam("Apellido") String Apellido,
-        @QueryParam("Telefono") String Telefono,
-        @QueryParam("Correo") String Correo        
-    ) {
-        JSONObject json = new JSONObject();
-
-        try {
-            if (Nombre == null || Apellido == null ||
-                Telefono == null || Correo == null ||               
-                Nombre.isEmpty() || Apellido.isEmpty() ||
-                Telefono.isEmpty() || Correo.isEmpty()){
-                
-                json.put("status", "ERROR");
-                json.put("mensaje", "Faltan parámetros requeridos");
-                return json;
-            }
-
-            PersonaDTO persona = new PersonaDTO();
-            persona.setNombre(Nombre);
-            persona.setApellido(Apellido);
-            persona.setTelefono(Telefono);
-            persona.setCorreo(Correo);
-            persona.setEstado(1);
-
-            DAO dao = new DAO();
-            dao.InsertarPersona(persona);
-
-            json.put("status", "OK");
-            json.put("mensaje", "Usuario insertado correctamente desde el equipo adminsitrador");
-        } catch (Exception e) {
-            json.put("status", "ERROR");
-            json.put("mensaje", "Error al insertar usuario: " + e.getMessage());
-        }
-
-        return json;
-    }
-    
-    @GET
-    @Path("Modificar")
-    @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject Modificar(
-        @QueryParam("IdPersona") int IdPersona,        
-        @QueryParam("Nombre") String Nombre,
-        @QueryParam("Apellido") String Apellido,
-        @QueryParam("Correo") String Correo,
-        @QueryParam("Telefono") String Telefono,
-        @QueryParam("Estado") int Estado
-    ) {
-        JSONObject json = new JSONObject();
-
-        try {
-                if (Nombre == null || Apellido == null || 
-                    Correo == null || Telefono == null ||
-                    Nombre.isEmpty() || Apellido.isEmpty() ||
-                    Correo.isEmpty() || Telefono.isEmpty()){
-                    
-                json.put("status", "ERROR");
-                json.put("mensaje", "Faltan parámetros requeridos");
-                return json;
-            }
-
-            PersonaDTO Persona = new PersonaDTO();
-            Persona.setIdPersona(IdPersona);
-            Persona.setNombre(Nombre);
-            Persona.setApellido(Apellido);
-            Persona.setCorreo(Correo);
-            Persona.setTelefono(Telefono);
-            Persona.setEstado(Estado);
-
-            DAO dao = new DAO();
-            dao.ModificarPersona(Persona);
-
-            json.put("status", "OK");
-            json.put("mensaje", "Usuario actualizado correctamente desde el equipo adminsitrador");
-        } catch (Exception e) {
-            e.printStackTrace();
-            json.put("status", "ERROR");
-            json.put("mensaje", "Error al actualizar usuario: " + e.toString());
-        }
-
-        return json;
-    }
-    
-    @GET
-    @Path("Borrar")
-    @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject Borrar(@QueryParam("IdPersona") int IdPersona) {
-        JSONObject json = new JSONObject();
-
-        try {
-            PersonaDTO Persona = new PersonaDTO();
-            Persona.setIdPersona(IdPersona);
-            Persona.setEstado(0); 
-
-            DAO dao = new DAO();
-            dao.BorrarPersona(Persona);
-
-            json.put("status", "OK");
-            json.put("mensaje", "Usuario marcado como inactivo correctamente desde el equipo adminsitrador.");
-
-        } catch (Exception e) {
-            json.put("status", "ERROR");
-            json.put("mensaje", "Error al intentar eliminar usuario: " + e.getMessage());
-        }
-
-        return json;
-    }
-
-
-    @GET
-    @Path("Consulta")
-    @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject Consulta(
-        @QueryParam("IdPersona") int IdPersona
-    ) {
-        JSONObject json = new JSONObject();
-
-        try {
-            PersonaDTO Persona = new PersonaDTO();
-            Persona.setIdPersona(IdPersona);
-
-            DAO dao = new DAO();
-            dao.ListarPersona(Persona); // este ya llena los datos en el mismo objeto
-
-            // Validamos si trajo datos
-            if (Persona.getNombre() != null && Persona.getCorreo() != null && Persona.getEstado() == 1){
-                json.put("status", "OK, Consulta hecha en equipo administrador");
-                json.put("IdPersona", Persona.getIdPersona());
-                json.put("Nombre", Persona.getNombre());
-                json.put("Apellido", Persona.getApellido());
-                json.put("Telefono", Persona.getTelefono());
-                json.put("Correo", Persona.getCorreo());
-            } else {
-                json.put("status", "ERROR");
-                json.put("mensaje", "No se encontró usuario con ID: " + IdPersona);
-            }
-
-        } catch (Exception e) {
-            json.put("status", "ERROR");
-            json.put("mensaje", "Error al consultar usuario: " + e.getMessage());
-        }
-        
-        return json;
-    }
-    
-    
     /**
      * NUEVOS WEB SERVICES FUNCIONALES CON HIBERNATE
      */
     
     @GET
-    @Path("Insertar2")
+    @Path("Insertar")
     @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject Insertar2(
+    public JSONObject Insertar(
         @QueryParam("Nombre") String Nombre,
         @QueryParam("Apellido") String Apellido,
         @QueryParam("Telefono") String Telefono,
@@ -355,9 +148,9 @@ public class WsprograIIIResource {
     }
     
     @GET
-    @Path("Modificar2")
+    @Path("Modificar")
     @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject Modificar2(
+    public JSONObject Modificar(
         @QueryParam("IdPersona") int IdPersona,
         @QueryParam("Nombre") String Nombre,
         @QueryParam("Apellido") String Apellido,
@@ -405,9 +198,9 @@ public class WsprograIIIResource {
     }
 
     @GET
-    @Path("Borrar2")
+    @Path("Borrar")
     @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject Borrar2(@QueryParam("IdPersona") int IdPersona) {
+    public JSONObject Borrar(@QueryParam("IdPersona") int IdPersona) {
         JSONObject json = new JSONObject();
 
         try {
@@ -432,9 +225,9 @@ public class WsprograIIIResource {
     }
 
     @GET
-    @Path("Consultar2")
+    @Path("Consultar")
     @Produces(MediaType.APPLICATION_JSON)
-    public JSONObject Consultar2(@QueryParam("IdPersona") int IdPersona) {
+    public JSONObject Consultar(@QueryParam("IdPersona") int IdPersona) {
         JSONObject json = new JSONObject();
 
         try {
@@ -466,5 +259,4 @@ public class WsprograIIIResource {
 
         return json;
     }
-
 }
