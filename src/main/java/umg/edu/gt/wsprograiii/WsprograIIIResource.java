@@ -19,8 +19,10 @@ import javax.enterprise.context.RequestScoped;
 import javax.json.JsonObject;
 import javax.ws.rs.FormParam;
 import org.json.simple.JSONObject;
+import umg.edu.gt.BD.DepartamentoDAO;
 
 import umg.edu.gt.BD.PersonaDAO;
+import umg.edu.gt.DTO.DepartamentoEntity;
 import umg.edu.gt.DTO.PersonaEntity;
 
 
@@ -200,6 +202,131 @@ public class WsprograIIIResource {
         } catch (Exception e) {
             json.put("status", "ERROR");
             json.put("mensaje", "Error al listar personas: " + e.getMessage());
+        }
+        return json;
+    }
+    
+    /**
+     * WEB SERVICES [APARTADO DEPARTAMENTO]
+     */
+
+    @POST
+    @Path("InsertarDepartamento")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public JSONObject InsertarDepartamento(DepartamentoEntity departamento) {
+        JSONObject json = new JSONObject();
+        try {
+            if (departamento.getNombre() == null || departamento.getNombre().isEmpty()) {
+                json.put("status", "ERROR");
+                json.put("mensaje", "Nombre requerido");
+                return json;
+            }
+            new DepartamentoDAO().InsertarDepartamento(departamento);
+            json.put("status", "OK");
+            json.put("mensaje", "Departamento insertado correctamente");
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al insertar departamento: " + e.getMessage());
+        }
+        return json;
+    }
+
+    @PUT
+    @Path("ModificarDepartamento")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public JSONObject ModificarDepartamento(DepartamentoEntity departamento) {
+        JSONObject json = new JSONObject();
+        try {
+            if (departamento.getIdDepartamento() <= 0 || departamento.getNombre() == null || departamento.getNombre().isEmpty()) {
+                json.put("status", "ERROR");
+                json.put("mensaje", "Parámetros inválidos");
+                return json;
+            }
+            new DepartamentoDAO().ModificarDepartamento(departamento);
+            json.put("status", "OK");
+            json.put("mensaje", "Departamento actualizado correctamente");
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al modificar departamento: " + e.getMessage());
+        }
+        return json;
+    }
+
+    @DELETE
+    @Path("BorrarDepartamento")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JSONObject BorrarDepartamento(@QueryParam("IdDepartamento") int idDepartamento) {
+        JSONObject json = new JSONObject();
+        try {
+            if (idDepartamento <= 0) {
+                json.put("status", "ERROR");
+                json.put("mensaje", "IdDepartamento inválido");
+                return json;
+            }
+            new DepartamentoDAO().BorrarDepartamento(idDepartamento);
+            json.put("status", "OK");
+            json.put("mensaje", "Departamento eliminado");
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al borrar departamento: " + e.getMessage());
+        }
+        return json;
+    }
+
+    @GET
+    @Path("ConsultarDepartamento")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JSONObject ConsultarDepartamento(@QueryParam("IdDepartamento") int idDepartamento) {
+        JSONObject json = new JSONObject();
+        try {
+            if (idDepartamento <= 0) {
+                json.put("status", "ERROR");
+                json.put("mensaje", "IdDepartamento inválido");
+                return json;
+            }
+            DepartamentoEntity departamento = new DepartamentoDAO().ConsultarDepartamento(idDepartamento);
+            if (departamento != null) {
+                json.put("status", "OK");
+                json.put("IdDepartamento", departamento.getIdDepartamento());
+                json.put("Nombre", departamento.getNombre());
+            } else {
+                json.put("status", "ERROR");
+                json.put("mensaje", "No se encontró el departamento");
+            }
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al consultar departamento: " + e.getMessage());
+        }
+        return json;
+    }
+
+    @GET
+    @Path("ListarDepartamento")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JSONObject ListarDepartamento() {
+        JSONObject json = new JSONObject();
+        try {
+            List<DepartamentoEntity> departamentos = new DepartamentoDAO().listarDepartamentos();
+            if (departamentos != null && !departamentos.isEmpty()) {
+                json.put("status", "OK");
+                json.put("total", departamentos.size());
+                List<JSONObject> lista = new java.util.ArrayList<>();
+                for (DepartamentoEntity d : departamentos) {
+                    JSONObject depJson = new JSONObject();
+                    depJson.put("IdDepartamento", d.getIdDepartamento());
+                    depJson.put("Nombre", d.getNombre());
+                    lista.add(depJson);
+                }
+                json.put("departamentos", lista);
+            } else {
+                json.put("status", "OK");
+                json.put("mensaje", "No hay departamentos");
+            }
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al listar departamentos: " + e.getMessage());
         }
         return json;
     }
