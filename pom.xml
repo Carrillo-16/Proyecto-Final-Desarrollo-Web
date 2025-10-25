@@ -20,6 +20,57 @@
     </properties>
     
     <dependencies>
+        
+        <!-- JSF 2.3 (Mojarra) - Para soporte completo de JSF en Tomcat -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.faces</artifactId>
+            <version>2.3.17</version>  <!-- Compatible con Java 8 y Tomcat 9 -->
+        </dependency>
+
+        <!-- PrimeFaces 12 - Para componentes UI avanzados -->
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <version>12.0.0</version>  <!-- Versión estable, compatible con JSF 2.3 -->
+        </dependency>
+
+        <!-- JSTL - Para tags en Facelets (opcional, pero útil para bucles) -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <!-- CDI API - Para inyección de dependencias en beans -->
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <version>2.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Weld - Implementación CDI para Tomcat (no incluido en javaee-api) -->
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet-shaded</artifactId>
+            <version>3.1.9.Final</version>  <!-- Compatible con CDI 2.0 y Tomcat 9 -->
+        </dependency>        
+
+        <!--  Hibernate Core (Implementación JPA)  -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.6.15.Final</version> <!--  Compatible con JDK 17 y Tomcat 9  -->
+        </dependency>
+
+        <!--  Hibernate Validator (para validaciones, opcional pero recomendado)  -->
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>6.2.5.Final</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
@@ -54,13 +105,25 @@
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
-            <version>${jakartaee}</version>
-            <scope>provided</scope>   
-        </dependency>                     
+            <version>8.0</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- Gson - Para manejo de JSON -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+                
     </dependencies>
     
      <build>
+        <!-- 💡 Aseguramos que el WAR final se llame wsprograIII.war -->
+        <finalName>wsprograIII</finalName>
+
         <plugins>
+            <!-- Compilador -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -73,6 +136,8 @@
                     </compilerArguments>
                 </configuration>
             </plugin>
+
+            <!-- WAR plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -81,6 +146,8 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+
+            <!-- Copia dependencias (sin cambios) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -106,13 +173,24 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
+            <!-- SonarQube -->
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.9.1.2184</version> <!-- versión compatible -->
+                <version>3.9.1.2184</version>
             </plugin>
-            
+
+            <!-- 💥 Configuramos el contexto para Tomcat -->
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <path>/wsprograIII</path> <!-- 👈 Contexto fijo -->
+                    <port>8080</port>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
