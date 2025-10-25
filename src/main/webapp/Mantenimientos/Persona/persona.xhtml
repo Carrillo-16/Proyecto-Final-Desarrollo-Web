@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>Mantenimiento de Personas - wsprograIII</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</h:head>
+
+<h:body>
+    <h:form id="frmPersona">
+
+        <p:fieldset legend="Formulario Persona">
+            <p:panelGrid columns="2">
+                <p:outputLabel value="Nombre:" for="nombre" />
+                <p:inputText id="nombre" value="#{personaBean.persona.nombre}" required="true" maxlength="50" />
+
+                <p:outputLabel value="Apellido:" for="apellido" />
+                <p:inputText id="apellido" value="#{personaBean.persona.apellido}" required="true" maxlength="50" />
+
+                <p:outputLabel value="Teléfono:" for="telefono" />
+                <p:inputText id="telefono" value="#{personaBean.persona.telefono}" maxlength="10" />
+
+                <p:outputLabel value="Correo:" for="correo" />
+                <p:inputText id="correo" value="#{personaBean.persona.correo}" required="true" maxlength="50" />
+
+                <p:commandButton value="Agregar Persona"
+                                 action="#{personaBean.ingresarPersona}"
+                                 update="tblPersona frmPersona"
+                                 resetValues="true" />
+            </p:panelGrid>
+        </p:fieldset>
+
+        <p:fieldset legend="Lista de Personas">
+            <p:dataTable id="tblPersona"
+                         value="#{personaBean.listarPersona}"
+                         var="item"
+                         editable="true"
+                         editMode="row"
+                         emptyMessage="No hay personas disponibles.">
+
+                <!-- Ajax para editar fila -->
+                <p:ajax event="rowEdit" listener="#{personaBean.editarPersona}" update="tblPersona"/>
+                <p:ajax event="rowEditCancel" listener="#{personaBean.cancelarEdicion}" update="tblPersona"/>
+
+                <p:column headerText="Nombre">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.nombre}"/></f:facet>
+                        <f:facet name="input"><p:inputText value="#{item.nombre}" style="width:100%"/></f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Apellido">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.apellido}"/></f:facet>
+                        <f:facet name="input"><p:inputText value="#{item.apellido}" style="width:100%"/></f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Correo">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.correo}"/></f:facet>
+                        <f:facet name="input"><p:inputText value="#{item.correo}" style="width:100%"/></f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Teléfono">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.telefono}"/></f:facet>
+                        <f:facet name="input"><p:inputText value="#{item.telefono}" style="width:100%"/></f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Estado">
+                    <h:outputText value="#{item.estado eq 1 ? 'Activo' : 'Inactivo'}"/>
+                </p:column>
+
+                <p:column headerText="Acciones" style="width:120px; text-align:center;">
+                    <!-- Botón para editar fila -->
+                    <p:rowEditor />
+
+                    <!-- Botón eliminar persona, pasa el item actual al método eliminarPersona -->
+                    <p:commandButton icon="pi pi-trash"
+                                     title="Eliminar"
+                                     action="#{personaBean.eliminarPersona(item)}"
+                                     update="tblPersona"
+                                     process="@this"
+                                     styleClass="ui-button-danger"
+                                     onclick="return confirm('¿Está seguro de eliminar esta persona?');"/>
+                </p:column>
+
+            </p:dataTable>
+
+            <!-- Botón para recargar listado si es necesario -->
+            <p:commandButton value="Actualizar Registros" action="#{personaBean.listarPersona}" update="tblPersona"/>
+        </p:fieldset>
+
+    </h:form>
+</h:body>
+</html>
