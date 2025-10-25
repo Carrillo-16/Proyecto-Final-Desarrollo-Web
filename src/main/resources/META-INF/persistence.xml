@@ -5,6 +5,10 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         
         <class>umg.edu.gt.DTO.PersonaEntity</class>
+        <class>umg.edu.gt.DTO.DepartamentoEntity</class>
+        <class>umg.edu.gt.DTO.MunicipioEntity</class>
+        <class>umg.edu.gt.DTO.TurnoEntity</class>
+        <class></class>
         
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
