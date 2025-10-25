@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+    <title>Mantenimiento de Departamentos - wsprograIII</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</h:head>
+
+<h:body>
+    <h:form id="frmDepartamento">
+        <p:fieldset legend="Formulario Departamento">
+            <p:panelGrid id="grdDepartamento" columns="2">
+                <p:outputLabel value="Nombre:"/>
+                <p:inputText value="#{departamentoBean.departamento.nombre}" required="true" maxlength="50"/>
+                <p:commandButton value="Agregar Departamento" action="#{departamentoBean.ingresarDepartamento}" update="tblDepartamento grdDepartamento" resetValues="true"/>
+            </p:panelGrid>
+        </p:fieldset>
+
+        <p:fieldset legend="Lista de Departamentos">
+            <p:dataTable id="tblDepartamento"
+                         value="#{departamentoBean.listarDepartamento}"
+                         var="item"
+                         editable="true"
+                         editMode="row"
+                         emptyMessage="No hay departamentos disponibles.">
+
+                <!-- Ajax para editar y cancelar -->
+                <p:ajax event="rowEdit" listener="#{departamentoBean.editarDepartamento}" update="tblDepartamento"/>
+                <p:ajax event="rowEditCancel" listener="#{departamentoBean.cancelarEdicion}" update="tblDepartamento"/>
+
+                <p:column headerText="ID" style="width:80px; text-align:center;">
+                    <h:outputText value="#{item.idDepartamento}"/>
+                </p:column>
+
+                <p:column headerText="Nombre">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{item.nombre}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:inputText value="#{item.nombre}" style="width:100%" required="true"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Acciones" style="width:120px; text-align:center;">
+                    <p:rowEditor/>
+
+                    <p:commandButton icon="pi pi-trash"
+                                     title="Eliminar"
+                                     action="#{departamentoBean.eliminarDepartamento(item)}"
+                                     update="tblDepartamento"
+                                     process="@this"
+                                     styleClass="ui-button-danger"
+                                     onclick="return confirm('¿Está seguro de eliminar este departamento?');"/>
+                </p:column>
+
+            </p:dataTable>
+
+            <p:commandButton value="Actualizar Registros" action="#{departamentoBean.listarDepartamento}" update="tblDepartamento"/>
+        </p:fieldset>
+        
+    </h:form>
+</h:body>
+</html>
