@@ -20,9 +20,11 @@ import javax.json.JsonObject;
 import javax.ws.rs.FormParam;
 import org.json.simple.JSONObject;
 import umg.edu.gt.BD.DepartamentoDAO;
+import umg.edu.gt.BD.MunicipioDAO;
 
 import umg.edu.gt.BD.PersonaDAO;
 import umg.edu.gt.DTO.DepartamentoEntity;
+import umg.edu.gt.DTO.MunicipioEntity;
 import umg.edu.gt.DTO.PersonaEntity;
 
 
@@ -327,6 +329,146 @@ public class WsprograIIIResource {
         } catch (Exception e) {
             json.put("status", "ERROR");
             json.put("mensaje", "Error al listar departamentos: " + e.getMessage());
+        }
+        return json;
+    }
+    
+    /**
+     * WEB SERVICES [APARTADO MUNICIPIO]
+     */
+    
+    @POST
+    @Path("InsertarMunicipio")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public JSONObject InsertarMunicipio(MunicipioEntity municipio) {
+        JSONObject json = new JSONObject();
+        try {
+            // Validación de parámetros
+            if (municipio.getNombre() == null || municipio.getNombre().isEmpty() || municipio.getIdDepartamento() <= 0) {
+                json.put("status", "ERROR");
+                json.put("mensaje", "Parámetros requeridos faltantes");
+                return json;
+            }
+
+            municipio.setEstado(1); // Activo por defecto
+            new MunicipioDAO().InsertarMunicipio(municipio);
+
+            json.put("status", "OK");
+            json.put("mensaje", "Municipio insertado correctamente");
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al insertar municipio: " + e.getMessage());
+        }
+        return json;
+    }
+
+
+    @PUT
+    @Path("ModificarMunicipio")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public JSONObject ModificarMunicipio(MunicipioEntity municipio) {
+        JSONObject json = new JSONObject();
+        try {
+            if (municipio.getIdMunicipio() <= 0 || municipio.getNombre() == null || municipio.getNombre().isEmpty() || municipio.getIdDepartamento() <= 0) {
+                json.put("status", "ERROR");
+                json.put("mensaje", "Parámetros inválidos");
+                return json;
+            }
+            new MunicipioDAO().ModificarMunicipio(municipio);
+            json.put("status", "OK");
+            json.put("mensaje", "Municipio actualizado correctamente");
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al modificar municipio: " + e.getMessage());
+        }
+        return json;
+    }
+
+    @DELETE
+    @Path("BorrarMunicipio")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JSONObject BorrarMunicipio(@QueryParam("IdMunicipio") int idMunicipio) {
+        JSONObject json = new JSONObject();
+        try {
+            if (idMunicipio <= 0) {
+                json.put("status", "ERROR");
+                json.put("mensaje", "IdMunicipio inválido");
+                return json;
+            }
+            new MunicipioDAO().BorrarMunicipio(idMunicipio);
+            json.put("status", "OK");
+            json.put("mensaje", "Municipio marcado como inactivo");
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al borrar municipio: " + e.getMessage());
+        }
+        return json;
+    }
+
+    @GET
+    @Path("ConsultarMunicipio")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JSONObject ConsultarMunicipio(@QueryParam("IdMunicipio") int idMunicipio) {
+        JSONObject json = new JSONObject();
+        try {
+            // Verificación de parámetros
+            if (idMunicipio <= 0) {
+                json.put("status", "ERROR");
+                json.put("mensaje", "IdMunicipio inválido");
+                return json;
+            }
+
+            MunicipioEntity municipio = new MunicipioDAO().ConsultarMunicipio(idMunicipio);
+            if (municipio != null) {
+                if (municipio.getEstado() == 1) {
+                    json.put("status", "OK");
+                    json.put("IdMunicipio", municipio.getIdMunicipio());
+                    json.put("Nombre", municipio.getNombre());
+                    json.put("IdDepartamento", municipio.getIdDepartamento());
+                } else {
+                    json.put("status", "ERROR");
+                    json.put("mensaje", "Municipio inactivo");
+                }
+            } else {
+                json.put("status", "ERROR");
+                json.put("mensaje", "Municipio no encontrado");
+            }
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al consultar municipio: " + e.getMessage());
+        }
+        return json;
+    }
+
+
+    @GET
+    @Path("ListarMunicipio")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JSONObject ListarMunicipio() {
+        JSONObject json = new JSONObject();
+        try {
+            List<MunicipioEntity> municipios = new MunicipioDAO().listarMunicipiosActivos();
+            if (municipios != null && !municipios.isEmpty()) {
+                json.put("status", "OK");
+                json.put("total", municipios.size());
+                List<JSONObject> lista = new java.util.ArrayList<>();
+                for (MunicipioEntity m : municipios) {
+                    JSONObject municipioJson = new JSONObject();
+                    municipioJson.put("IdMunicipio", m.getIdMunicipio());
+                    municipioJson.put("Nombre", m.getNombre());
+                    municipioJson.put("IdDepartamento", m.getIdDepartamento());
+                    lista.add(municipioJson);
+                }
+                json.put("municipios", lista);
+            } else {
+                json.put("status", "OK");
+                json.put("mensaje", "No hay municipios activos");
+            }
+        } catch (Exception e) {
+            json.put("status", "ERROR");
+            json.put("mensaje", "Error al listar municipios: " + e.getMessage());
         }
         return json;
     }
